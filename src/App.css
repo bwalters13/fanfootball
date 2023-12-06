@@ -1,0 +1,40 @@
+.col {
+  text-align: center !important;
+}
+
+.App {
+  font-family: 'Futura';
+  background-color: #454545;
+}
+
+.col {
+  color: white;
+}
+
+.navbar {
+  background-color: #712cf9;
+}
+
+.iframe-div {
+  max-width: 650px;
+  margin: auto;
+  overflow: hidden;
+  display: flex;
+}
+
+iframe {
+  overflow: auto;
+  top: -5%;
+  margin-top: -100px;
+}
+
+@media only screen and (max-width: 600px) {
+  body {
+    background-color: lightblue;
+    font-size: small;
+  }
+
+  .card {
+    width: 100% !important;
+  }
+}
