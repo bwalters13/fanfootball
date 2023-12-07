@@ -119,7 +119,7 @@ const Game = ({ teams, matchup }) => {
     const getColumns = (isMobile, team) => {
         if (isMobile) {
             return (
-                <thead style={{height: "10vh"}}>
+                <thead>
                     <tr>
                         <th></th>
                         <th style={{verticalAlign: 'center'}} className="ms-auto">{team.teamName}</th>
