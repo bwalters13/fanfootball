@@ -61,6 +61,9 @@ const Game = ({ teams, matchup }) => {
     let awayTeam = teams[matchup.awayTeam];
     let homeStarters = homeTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
 
+    const getTeamLogo = (player) => { 
+        return <img src={'/img/' + player.team + '.png'} height="30" width="30" ></img>
+    }
 
     homeStarters.sort((a, b) => {
         return sortOrder.indexOf(a.position) - sortOrder.indexOf(b.position);
@@ -76,18 +79,20 @@ const Game = ({ teams, matchup }) => {
         return (
             <tr>
                 <td>{player.position}</td>
-                <td>{player.playerName}</td>
+                <td>{player.playerName}{getTeamLogo(player)}</td>
                 <td>{player.projected}</td>
                 <td>{player.playerScore}</td>
             </tr>
         )
     });
 
+    
+
     let awayPlayerContent = awayStarters.map((player) => {
         return (
             <tr>
                 <td>{player.position}</td>
-                <td>{player.playerName}</td>
+                <td>{player.playerName}{getTeamLogo(player)}</td>
                 <td>{player.projected}</td>
                 <td>{player.playerScore}</td>
             </tr>
@@ -98,7 +103,7 @@ const Game = ({ teams, matchup }) => {
         return (
             <tr>
                 <td>{player.position}</td>
-                <td>{player.playerName}</td>
+                <td>{player.playerName}{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
                 <td style={{textAlign: 'center'}}>{player.playerScore}</td>
             </tr>
@@ -109,7 +114,7 @@ const Game = ({ teams, matchup }) => {
         return (
             <tr>
                 <td>{player.position}</td>
-                <td>{player.playerName}</td>
+                <td>{player.playerName}{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
                 <td style={{textAlign: 'center'}}>{player.playerScore}</td>
             </tr>
@@ -119,10 +124,10 @@ const Game = ({ teams, matchup }) => {
     const getColumns = (isMobile, team) => {
         if (isMobile) {
             return (
-                <thead style={{height: "10vh"}}>
+                <thead>
                     <tr>
                         <th></th>
-                        <th style={{verticalAlign: 'center'}} className="ms-auto">{team.teamName}</th>
+                        <th style={{verticalAlign: 'center'}}>{team.teamName}</th>
                         {/* <th>Projected</th> */}
                         <th style={{fontSize: 'medium'}}>{team.teamScore}</th>
                     </tr>
