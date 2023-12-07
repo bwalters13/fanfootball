@@ -1,0 +1,23 @@
+.iframe-div {
+    max-width: 650px;
+    margin: auto;
+    overflow: hidden;
+    height: 100%;
+  }
+  
+iframe {
+    overflow: auto;
+    margin-top: -100px;
+    height: 100%;
+}
+
+.col {
+    text-align: center !important;
+}
+
+.Scoreboard {
+    min-height: 100vh;
+}
+
+
+  

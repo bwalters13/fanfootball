@@ -9,6 +9,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import Navbar from 'react-bootstrap/Navbar';
+import Scoreboard from './Scoreboard.js';
+import Lineups from './lineups.js';
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+} from "react-router-dom";
 
 const s2 = 'AEBLbPeWIC61WxXB2%2F0rCLG2Lc2MPBG9bd6kCKAEfGZo3IOR%2Fjxv6sZqmsko9aieZnxqrxbDTK1%2BFCzmj1%2BfVNNTTlbTGQwl0gyLHmUG3NzpB0tRPMQMNtmuOyTeXvKMXjHR6MYsUo%2F9Urv8YVKWM7N4X%2FTyuzJpt2FC%2BR8b5ybw3KhoynFrwDP8y0RmAno4UgsgUBOnvWp2v8g91VCkkNlTKDzjO6tUcovif%2FMmyOOUUVYMXmPboQmMwzSrEKP2BTFS4PvUTTDEMfy3Kxw6gEEF';
 const swid = '{C0029F35-8FC0-4E99-B1F3-74350A1A393F}';
@@ -40,46 +47,6 @@ export default function App() {
     const [teams, setTeams] = useState([]);
     const [loaded, setLoaded] = useState(false);
 
-    let scoreContent = [];
-
-    if (loaded) {
-        scoreContent = matchups.map((matchup) => {
-            return (
-                <div style={{width: '100%', height: '50%', alignContent: 'center'}}>
-                    <Stack gap={3}>
-                        <div className="p-2">
-                            <Card style={{width: '50%', margin: 'auto'}} data-bs-theme="dark">
-                                <Card.Body>
-                                    <Card.Title>
-                                        <Container>
-                                            <Row>
-                                                <Col>{teams[matchup.homeTeam].teamName}</Col>
-                                                <Col>{teams[matchup.awayTeam].teamName}</Col>
-                                            </Row>
-                                        </Container>
-                                    </Card.Title>
-                                    <Card.Text>
-                                        <Container>
-                                            <Row>
-                                                <Col>{teams[matchup.homeTeam].teamScore}</Col>
-                                                <Col>{teams[matchup.awayTeam].teamScore}</Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>Projected Score: {teams[matchup.homeTeam].projectedScore}</Col>
-                                                <Col>Yet To Play: {teams[matchup.homeTeam].playersYetToPlay}</Col>
-                                                <Col>Projected Score: {teams[matchup.awayTeam].projectedScore}</Col>
-                                                <Col>Yet To Play: {teams[matchup.awayTeam].playersYetToPlay}</Col>
-                                            </Row>
-                                        </Container>
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </div>
-                    </Stack>
-                </div>
-            )
-        })
-    }
         // scoreContent = teams.map((team) => {
         //     return (
         //         <div style={{float: 'left', width: '25%', height: '50%'}}>
@@ -170,17 +137,12 @@ export default function App() {
 
 
     return (
-        <div className="App">
-            <Navbar>
-                <Navbar.Brand href="#home">
-                    <text className="d-inline-block align-top" style={{fontWeight: 'bold'}}>Living the Dream</text>
-                </Navbar.Brand>
-            </Navbar>
-            {scoreContent}
-            <div class="iframe-div">
-                <iframe allowFullScreen={true} id="test" src="https://www.fantasypros.com/nfl/gameday.php" title="pbp" style={{width: '100%', height: '500px'}}></iframe>  
-            </div>
-        </div>
+        <Router>
+            <Routes>
+                <Route exact path="/" element={<Scoreboard loaded={loaded} teams={teams} matchups={matchups}/>}/>
+                <Route path="/scores" element={<Lineups loaded={loaded} teams={teams} matchups={matchups}/>}/>
+            </Routes>
+        </Router>
     );
     
 }
@@ -233,7 +195,7 @@ class Player {
     constructor(playerName, playerScore, fantasyTeamId, position, team, projected, yetToPlay) {
         this.playerName = playerName;
         this.playerScore = playerScore;
-        this.position = position;
+        this.position = position === 'RB/WR/TE' ? 'FLEX' : position;
         this.team = team;
         this.fantasyTeamId = fantasyTeamId;
         this.projected = Number(projected.toFixed(2));
