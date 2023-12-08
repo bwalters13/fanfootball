@@ -18,6 +18,14 @@
   width: 100%;
 }
 
+.teamSum {
+  display: inline-block;
+  width: 50%;
+}
+
+h3.awayTeam {
+
+}
 
 .nav-link {
   font-weight: bold;
@@ -27,6 +35,20 @@ body {
   background-image: linear-gradient( 179deg,  rgba(0,0,0,1) 9.2%, rgba(127,16,16,1) 103.9% );
   height: 100%;
   font-family: 'Futura';
+}
+
+/* .teamSum {
+  display: inline-block;
+  margin: 1rem;
+  text-align: center;
+  padding: 0 0;
+} */
+/* 
+.homeTeam {
+  margin-right: 20%;
+} */
+
+.awayTeam {
 }
 
 html {
@@ -76,6 +98,15 @@ text {
   color: rgb(0, 0, 0);
 }
 
+tr {
+  width: 100% !important;
+  height: 20px !important;
+}
+
+.table{
+  table-layout: fixed;
+}
+
 
 /* *{ border: 1px solid red; } */
 
@@ -87,20 +118,23 @@ text {
 
   .teamTable {
     font-size: x-small;
-    width: 50% !important;  
+    width: 50% !important; 
+    padding: 0 !important; 
   }
 
-  .navbar {
+
+  .home.navbar {
     font-size: small;
   }
 
   .teamName {
-    font-size: small;
-    vertical-align: bottom !important;
+    font-size: medium;
+    vertical-align: middle !important;
+    padding-bottom: 5% !important;
   }
 
   .sb-detail {
-    font-size: xx-small;
+    font-size: small;
   }
   #uncontrolled-tab-example-tab-game1 {
     font-size: xx-small !important;
@@ -112,11 +146,32 @@ text {
   
   }
 
+  .teamSum {
+    display: inline-block;  
+    font-size: xx-small !important;
+    width: 50% !important;
+  }
+
+  .div-sum{
+    width: 100%;
+    text-align: center;
+  }
+  .matchup-team {
+    width: 100% !important;
+    font-size: 110% !important;
+    font-weight: bold !important;
+  }
+
+  tr {
+    font-size: small !important;
+    height: 20vh !important;
+  }
+
   .card-title {
     margin-bottom: 0px !important;
   }
 
-  .card {
+  .matchup-card {
     width: 100% !important;
   }
 

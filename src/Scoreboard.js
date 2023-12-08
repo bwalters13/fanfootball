@@ -10,6 +10,14 @@ import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import MyNavbar from './Navbar.js';
 
+const teamPictures = {
+    12: '/img/me.jpg',
+    7: '/img/spence.jpg',
+    14: '/img/shap.jpg',
+    13: '/img/saum.jpg'
+}
+
+
 export default function Scoreboard({ loaded, teams, matchups }) {
     let scoreContent = [];
 
@@ -31,15 +39,17 @@ export default function Scoreboard({ loaded, teams, matchups }) {
         scoreContent = matchups.map((matchup) => {
             return (
                 <div className="p-2" style={{ margin: 'auto', height: '80%', }}>
-                    <Card style={{margin: 'auto'}} data-bs-theme="dark">
+                    <Card style={{margin: 'auto', height: '40vh'}} data-bs-theme="dark" className="matchup-card">
                         <Card.Body>
                             <Card.Title>
                                 <Container>
                                     <Row>
                                         <div style={{width: '50%'}}>
+                                            <Col><img style={{borderRadius: '30px'}} height="30" width="30" src={teamPictures[matchup.homeTeam]}></img></Col>
                                             <Col className="teamName">{teams[matchup.homeTeam].teamName}</Col>
                                         </div>
                                         <div style={{width: '50%'}}>
+                                            <Col><img style={{borderRadius: '30px'}} height="30" width="30" src={teamPictures[matchup.awayTeam]}></img></Col>
                                             <Col className="teamName">{teams[matchup.awayTeam].teamName}</Col>
                                         </div>
                                     </Row>
@@ -48,8 +58,8 @@ export default function Scoreboard({ loaded, teams, matchups }) {
                             <Card.Text>
                                 <Container>
                                     <Row>
-                                        <Col style={{paddingBottom: '3%'}}>{teams[matchup.homeTeam].teamScore}</Col>
-                                        <Col style={{paddingBottom: '3%'}}>{teams[matchup.awayTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '5%'}}>{teams[matchup.homeTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '5%'}}>{teams[matchup.awayTeam].teamScore}</Col>
                                     </Row>
                                     <Row>
                                         <Col className="sb-detail">Projected Score: {teams[matchup.homeTeam].projectedScore}</Col>

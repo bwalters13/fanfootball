@@ -6,9 +6,32 @@ import Table from 'react-bootstrap/Table';
 import Stack from 'react-bootstrap/Stack';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
 import React, { Component, useEffect, useState } from 'react';
+import Papa from 'papaparse';
+import teamCSV from './teams.csv';
+import { Container } from 'react-bootstrap';
 
 const sortOrder = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'K', 'D/ST'];
+let data = undefined;
+const papaConfig = {
+    complete: (results, file) => {
+      data = results.data;
+    },
+    download: true,
+    header: true,
+    error: (error, file) => {
+      console.log('Error while parsing:', error, file);
+    },
+};
+console.log(Papa.parse(teamCSV, papaConfig));
+
+const teamPictures = {
+    12: '/img/me.png',
+    7: '/img/spence.png',
+    14: '/img/shap.png',
+    13: '/img/saum.png'
+}
 
 const Lineups = ({ loaded, teams, matchups }) => {
     if (!loaded) {
@@ -18,6 +41,8 @@ const Lineups = ({ loaded, teams, matchups }) => {
             </div>
         )
     }
+
+    console.log('data', data);
 
     const getMatchupString = (matchup) => {
         let homeTeam = teams[matchup.homeTeam];
@@ -62,7 +87,12 @@ const Game = ({ teams, matchup }) => {
     let homeStarters = homeTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
 
     const getTeamLogo = (player) => { 
-        return <img src={'/img/' + player.team + '.png'} height="30" width="30" ></img>
+        return <img style={{marginLeft: '2%'}} src={'/img/' + player.team + '.png'} height="30" width="30" ></img>
+    }
+
+    const getRowColor = (player) => {
+        console.log(data.find((row) => row.team_abbr === player.team).team_color)
+        return data.find((row) => row.team_abbr === player.team).team_color;
     }
 
     homeStarters.sort((a, b) => {
@@ -78,10 +108,10 @@ const Game = ({ teams, matchup }) => {
     let homePlayerContent = homeStarters.map((player) => {
         return (
             <tr>
-                <td>{player.position}</td>
-                <td>{player.playerName}{getTeamLogo(player)}</td>
-                <td>{player.projected}</td>
-                <td>{player.playerScore}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.projected}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });
@@ -91,10 +121,10 @@ const Game = ({ teams, matchup }) => {
     let awayPlayerContent = awayStarters.map((player) => {
         return (
             <tr>
-                <td>{player.position}</td>
-                <td>{player.playerName}{getTeamLogo(player)}</td>
-                <td>{player.projected}</td>
-                <td>{player.playerScore}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.projected}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });
@@ -102,10 +132,10 @@ const Game = ({ teams, matchup }) => {
     let homeMobilePlayerContent = homeStarters.map((player) => {
         return (
             <tr>
-                <td>{player.position}</td>
-                <td>{player.playerName}{getTeamLogo(player)}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'center'}}>{player.playerScore}</td>
+                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), fontSize: 'medium', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });
@@ -113,10 +143,10 @@ const Game = ({ teams, matchup }) => {
     let awayMobilePlayerContent = awayStarters.map((player) => {
         return (
             <tr>
-                <td>{player.position}</td>
-                <td>{player.playerName}{getTeamLogo(player)}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'center'}}>{player.playerScore}</td>
+                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), fontSize: 'medium', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });
@@ -124,14 +154,9 @@ const Game = ({ teams, matchup }) => {
     const getColumns = (isMobile, team) => {
         if (isMobile) {
             return (
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th style={{verticalAlign: 'center'}}>{team.teamName}</th>
-                        {/* <th>Projected</th> */}
-                        <th style={{fontSize: 'medium'}}>{team.teamScore}</th>
-                    </tr>
-                </thead>
+                <div style={{width: '100%', height: '12vh', textAlign: 'center', paddingLeft: '20%'}}>
+                    <caption style={{color: 'white', display: 'inline-block'}}>{team.teamName}</caption>
+                </div>
             )
         } else {
             return (
@@ -140,32 +165,66 @@ const Game = ({ teams, matchup }) => {
                         <th></th>
                         <th>{team.teamName}</th>
                         <th>Projected</th>
-                        <th>{team.teamScore}</th>
+                        <th></th>
                     </tr>
                 </thead>
             )
         }
     }
 
+    
+
     let sz = isMobile ? 'sm' : 'md';
     
     return (
-        <Stack className="lineups" direction="horizontal">
-            <div className="mx-auto teamTable">
-                <Table striped variant="dark" size={sz}>
-                    {getColumns(isMobile, homeTeam)}
-                    <tbody>{isMobile ? homeMobilePlayerContent : homePlayerContent}</tbody>
-                </Table>
+        <Container>
+            <div className="top-score">
+                <Card bg='dark' text="white" className="teamSum">
+                    <Card.Body>
+                        <Card.Text>
+                            <div className='homeTeam div-sum'>
+                                <Row>
+                                    <div className="matchup-team">{homeTeam.teamName}</div>
+                                </Row>
+                                <Row>
+                                    <div>{homeTeam.teamScore}</div>
+                                </Row>
+                            </div>
+                        </Card.Text>
+                    </Card.Body>
+                </Card>
+                <Card bg='dark' text="white" className='teamSum'>
+                    <Card.Body>
+                        <Card.Text>
+                            <div className='awayTeam div-sum'>
+                                <Row>
+                                        <div className="matchup-team">{awayTeam.teamName}</div>
+                                    </Row>
+                                <Row>
+                                    <div>{awayTeam.teamScore}</div>
+                                </Row>
+                            </div>
+                        </Card.Text>
+                    </Card.Body>
+                </Card>
             </div>
-            <div className="mx-auto teamTable" >
-                <Table striped variant="dark" size={sz}>
-                    {getColumns(isMobile, awayTeam)}
-                    <tbody>
-                        {isMobile ? awayMobilePlayerContent : awayPlayerContent}
-                    </tbody>
-                </Table>
-            </div>
-        </Stack>
+            <Stack className="lineups" direction="horizontal">
+                <div className="mx-auto teamTable">
+                    <Table variant="dark" size={sz}>
+                        {/* {getColumns(isMobile, homeTeam)} */}
+                        <tbody>{isMobile ? homeMobilePlayerContent : homePlayerContent}</tbody>
+                    </Table>
+                </div>
+                <div className="mx-auto teamTable" >
+                    <Table variant="dark" size={sz}>
+                        {/* {getColumns(isMobile, awayTeam)} */}
+                        <tbody>
+                            {isMobile ? awayMobilePlayerContent : awayPlayerContent}
+                        </tbody>
+                    </Table>
+                </div>
+            </Stack>
+        </Container>
     );
 }
  
