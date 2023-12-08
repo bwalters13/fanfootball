@@ -87,7 +87,7 @@ const Game = ({ teams, matchup }) => {
     let homeStarters = homeTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
 
     const getTeamLogo = (player) => { 
-        return <img style={{marginLeft: '2%'}} src={'/img/' + player.team + '.png'} height="30" width="30" ></img>
+        return <img style={{marginLeft: '2%'}} src={'/img/' + player.team.toLowerCase() + '.png'} height="30" width="30" ></img>
     }
 
     const getRowColor = (player) => {
@@ -110,8 +110,8 @@ const Game = ({ teams, matchup }) => {
             <tr>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.projected}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>Proj: {player.projected}</td>
+                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });
@@ -123,8 +123,8 @@ const Game = ({ teams, matchup }) => {
             <tr>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}{getTeamLogo(player)}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.projected}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
+                <td style={{backgroundColor: getRowColor(player)}}>Proj: {player.projected}</td>
+                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore}</td>
             </tr>
         )
     });

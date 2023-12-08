@@ -39,7 +39,7 @@ export default function Scoreboard({ loaded, teams, matchups }) {
         scoreContent = matchups.map((matchup) => {
             return (
                 <div className="p-2" style={{ margin: 'auto', height: '80%', }}>
-                    <Card style={{margin: 'auto', height: '40vh'}} data-bs-theme="dark" className="matchup-card">
+                    <Card style={{margin: 'auto'}} data-bs-theme="dark" className="matchup-card">
                         <Card.Body>
                             <Card.Title>
                                 <Container>
