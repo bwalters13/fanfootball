@@ -62,10 +62,18 @@ export default function Scoreboard({ loaded, teams, matchups }) {
                                         <Col style={{paddingBottom: '5%'}}>{teams[matchup.awayTeam].teamScore}</Col>
                                     </Row>
                                     <Row>
-                                        <Col className="sb-detail">Projected Score: {teams[matchup.homeTeam].projectedScore}</Col>
-                                        <Col className="sb-detail">Yet To Play: {teams[matchup.homeTeam].playersYetToPlay}</Col>
-                                        <Col className="sb-detail">Projected Score: {teams[matchup.awayTeam].projectedScore}</Col>
-                                        <Col className="sb-detail">Yet To Play: {teams[matchup.awayTeam].playersYetToPlay}</Col>
+                                        <Col className="sb-detail">Projected Score:</Col>
+                                        <Col className="sb-detail">Yet To Play: </Col>
+                                    
+                                        <Col className="sb-detail">Projected Score:</Col>
+                                        <Col className="sb-detail">Yet To Play:</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="sb-detail">{teams[matchup.homeTeam].projectedScore}</Col>
+                                        <Col className="sb-detail">{teams[matchup.homeTeam].playersYetToPlay}</Col>
+                                    
+                                        <Col className="sb-detail">{teams[matchup.awayTeam].projectedScore}</Col>
+                                        <Col className="sb-detail">{teams[matchup.awayTeam].playersYetToPlay}</Col>
                                     </Row>
                                 </Container>
                             </Card.Text>
