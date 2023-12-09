@@ -91,7 +91,6 @@ const Game = ({ teams, matchup }) => {
     }
 
     const getRowColor = (player) => {
-        console.log(data.find((row) => row.team_abbr === player.team).team_color)
         return data.find((row) => row.team_abbr === player.team).team_color;
     }
 
@@ -138,7 +137,7 @@ const Game = ({ teams, matchup }) => {
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), fontSize: 'medium', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore === 0 ? '5%' : '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
@@ -150,7 +149,7 @@ const Game = ({ teams, matchup }) => {
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), fontSize: 'medium', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });

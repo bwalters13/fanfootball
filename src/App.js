@@ -177,7 +177,8 @@ class Team {
     get playersYetToPlay() {
         let _count = 0;
         this.teamPlayers.forEach(player => {
-            if (player.yetToPlay && player.position !== "Bench") {
+            if (player.yetToPlay && player.position !== "Bench" && player.position !== "IR") {
+                console.log('player', player)
                 _count += 1;
             }
         });
