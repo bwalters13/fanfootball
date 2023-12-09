@@ -125,7 +125,7 @@ const Game = ({ teams, matchup }) => {
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 <td style={{backgroundColor: getRowColor(player)}}>Proj: {player.projected}</td>
-                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
@@ -149,10 +149,25 @@ const Game = ({ teams, matchup }) => {
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore === 0 ? '5%' : '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
+
+    const awayTeamFormatted = (team) => { 
+        if (awayTeam.teamName === 'Team Jafarinia' & isMobile) {
+            return (
+                <div>
+                    <div className="matchup-team">Team<br/>Jafarinia</div>
+                </div>
+            )
+        }
+        return (
+            <div>
+                <div className="matchup-team">{team.teamName}</div>
+            </div>
+        )
+    }
 
     const getColumns = (isMobile, team) => {
         if (isMobile) {
@@ -190,7 +205,7 @@ const Game = ({ teams, matchup }) => {
                                     <div className="matchup-team">{homeTeam.teamName}</div>
                                 </Row>
                                 <Row>
-                                    <div>{homeTeam.teamScore}</div>
+                                    <div className="score">{homeTeam.teamScore}</div>
                                 </Row>
                             </div>
                         </Card.Text>
@@ -201,10 +216,10 @@ const Game = ({ teams, matchup }) => {
                         <Card.Text>
                             <div className='awayTeam div-sum'>
                                 <Row>
-                                        <div className="matchup-team">{awayTeam.teamName}</div>
-                                    </Row>
+                                    {awayTeamFormatted(awayTeam)}
+                                </Row>
                                 <Row>
-                                    <div>{awayTeam.teamScore}</div>
+                                    <div className="score">{awayTeam.teamScore}</div>
                                 </Row>
                             </div>
                         </Card.Text>

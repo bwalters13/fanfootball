@@ -157,9 +157,15 @@ tr {
     text-align: center;
   }
   .matchup-team {
+    height: 10vw !important;
+    line-height: 5vw !important;
     width: 100% !important;
-    font-size: 110% !important;
+    font-size: 150% !important;
     font-weight: bold !important;
+  }
+
+  .score {
+    font-size: 160% !important;
   }
 
   tr {
