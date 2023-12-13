@@ -149,7 +149,7 @@ const Game = ({ teams, matchup }) => {
                 {/* <td>{player.projected}</td> */}
                 <td 
                     style={{verticalAlign: 'middle', textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: '2%', fontSize: 'medium', width: '15vw'}}>
-                    {player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}<br></br><div style={{fontSize: 'x-small', textAlign: 'right'}}>Proj: {player.projected}</div>
+                    {player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}<br></br><div style={{display: player.playerScore == 0 ? 'inline' : 'none', fontSize: 'x-small', textAlign: 'right'}}>Proj: {player.projected}</div>
                 </td>
             </tr>
         )
@@ -165,7 +165,7 @@ const Game = ({ teams, matchup }) => {
                 {/* <td>{player.projected}</td> */}
                 <td 
                     style={{verticalAlign: 'middle', textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: '2%', fontSize: 'medium', width: '15vw'}}>
-                    {player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}<br></br><div style={{fontSize: 'x-small', textAlign: 'right'}}>Proj: {player.projected}</div>
+                    {player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}<br></br><div style={{display: player.playerScore == 0 ? 'inline' : 'none', fontSize: 'x-small', textAlign: 'right'}}>Proj: {player.projected}</div>
                 </td>
             </tr>
         )
@@ -204,11 +204,6 @@ const Game = ({ teams, matchup }) => {
                 </div>
             )
         }
-        return (
-            <div>
-                <div className="matchup-team">{team.teamName}</div>
-            </div>
-        )
     }
 
     const getColumns = (isMobile, team) => {
