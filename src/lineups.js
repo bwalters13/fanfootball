@@ -172,10 +172,35 @@ const Game = ({ teams, matchup }) => {
     });
 
     const awayTeamFormatted = (team) => { 
-        if (awayTeam.teamName === 'Team Jafarinia' & isMobile) {
+        if (!isMobile) {
+            return (
+                <div>
+                    <div className="matchup-team">{team.teamName}</div>
+                </div>
+            )
+        }
+        if (team.teamName === 'Team Jafarinia' & isMobile) {
             return (
                 <div>
                     <div className="matchup-team">Team<br/>Jafarinia</div>
+                </div>
+            )
+        } else if (team.teamName === 'The Rise of SkyyWalker') { 
+            return (
+                <div>
+                    <div className="matchup-team">The Rise of<br/> Skyywalker</div>
+                </div>
+            )
+        } else if (team.teamName === 'Rushin Disinformation ') {
+            return (
+                <div>
+                    <div className="matchup-team">Rushin<br/>Disinformation</div>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    <div className="matchup-team">Super Ja'Marrio<br/>Brothers</div>
                 </div>
             )
         }
@@ -219,7 +244,7 @@ const Game = ({ teams, matchup }) => {
                         <Card.Text>
                             <div className='homeTeam div-sum'>
                                 <Row>
-                                    <div className="matchup-team">{homeTeam.teamName}</div>
+                                    {awayTeamFormatted(homeTeam)}
                                 </Row>
                                 <Row>
                                     <div className="score">{homeTeam.teamScore}</div>
