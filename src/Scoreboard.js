@@ -18,6 +18,8 @@ const teamPictures = {
 }
 
 
+
+
 export default function Scoreboard({ loaded, teams, matchups }) {
     let scoreContent = [];
 

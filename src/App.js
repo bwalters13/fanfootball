@@ -25,6 +25,7 @@ const matchups = [
     {homeTeam: 14, awayTeam: 13}
 ]
 
+
 const relevantTeams = [ 12, 7, 14, 13 ];
 
 const myClient = new Client({ 
@@ -34,11 +35,28 @@ const myClient = new Client({
     SWID: swid,
 });
 
-const currentWeek = 14;
+const currentWeek = 15;
 
-const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: currentWeek });
+const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 13 });
+const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: 13, scoringPeriodId: currentWeek-1})
+
+const pastScores = {};
+
+oldBoxscore.forEach((boxscore) => {
+    if (relevantTeams.includes(boxscore.homeTeamId)) {
+        pastScores[boxscore.homeTeamId] = boxscore.homeWeekly[14];
+    } else if (relevantTeams.includes(boxscore.awayTeamId)) {
+        pastScores[boxscore.awayTeamId] = boxscore.awayWeekly[14];
+    }
+});
+
+console.log(pastScores);
+console.log(teamInfo)
 
 const sumValues = obj => {
+    if (obj === undefined) {
+        return 0;
+    }
     return ( Object.values(obj).reduce((a, b) => a + b)) - 1;
 }
 
@@ -85,32 +103,25 @@ export default function App() {
 
     const loadRosters = async() => {
         const allTeams = {};
-        let boxscores = await myClient.getBoxscoreForWeek({ seasonId: 2023, matchupPeriodId: 13, scoringPeriodId: currentWeek });
-        console.log(boxscores);
+        let boxscores = await myClient.getBoxscoreForWeek({ seasonId: 2023, matchupPeriodId: 14, scoringPeriodId: currentWeek });
+        console.log('boxscores:', boxscores);
         boxscores = boxscores.filter((boxscore) => relevantTeams.includes(boxscore.homeTeamId) || relevantTeams.includes(boxscore.awayTeamId));
         boxscores.forEach(boxscore => {
             if (relevantTeams.includes(boxscore.homeTeamId)) {
                 let homeTeamInfo = teamInfo.filter((team) => team.id === boxscore.homeTeamId);
-                let homeTeam = new Team(boxscore.homeTeamId, homeTeamInfo[0].name);
+                let homeTeam = new Team(boxscore.homeTeamId, boxscore.homeScore, homeTeamInfo[0].name, pastScores[boxscore.homeTeamId], boxscore.homeProjectedScore);
                 boxscore.homeRoster.forEach(player => {
-                    let yetToPlay = true;
-                    if (Object.keys(player.pointBreakdown).length > 1) {
-                        yetToPlay = false;
-                    }
-                    let newPlayer = new Player(player.fullName, player.totalPoints, boxscore.homeTeamId, player.rosteredPosition, player.proTeamAbbreviation, sumValues(player.projectedPointBreakdown), yetToPlay);
+                    // let newPlayer = new Player(player.fullName, player.totalPoints, boxscore.homeTeamId, player.rosteredPosition, player.proTeamAbbreviation, sumValues(player.projectedPointBreakdown), yetToPlay);
+                    let newPlayer = new Player(player, boxscore.homeTeamId);
                     homeTeam.addPlayer(newPlayer);
                 });
                 allTeams[boxscore.homeTeamId] = homeTeam;
             }
             if ('awayTeamId' in boxscore && relevantTeams.includes(boxscore.awayTeamId)) {
                 let awayTeamInfo = teamInfo.filter((team) => team.id === boxscore.awayTeamId);
-                let awayTeam = new Team(boxscore.awayTeamId, awayTeamInfo[0].name);
+                let awayTeam = new Team(boxscore.awayTeamId, boxscore.awayScore, awayTeamInfo[0].name, pastScores[boxscore.awayTeamId], boxscore.awayProjectedScore);
                 boxscore.awayRoster.forEach(player => {
-                    let yetToPlay = true;
-                    if (Object.keys(player.pointBreakdown).length > 1) {
-                        yetToPlay = false;
-                    }
-                    let newPlayer = new Player(player.fullName, player.totalPoints, boxscore.awayTeamId, player.rosteredPosition, player.proTeamAbbreviation, sumValues(player.projectedPointBreakdown), yetToPlay);
+                    let newPlayer = new Player(player, boxscore.awayTeamId);
                     awayTeam.addPlayer(newPlayer);
                 });
                 allTeams[boxscore.awayTeamId] = awayTeam;
@@ -148,37 +159,39 @@ export default function App() {
 }
 
 class Team {
-    constructor(teamId, teamName) {
+    constructor(teamId, score, teamName, pastScore, projectedScore) {
+        this.teamScore = Number(score + pastScore).toFixed(2);
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamPlayers = [];
+        this.pastScore = pastScore;
+        this.projectedScore = Number(projectedScore + pastScore).toFixed(2);
     }
 
-    get teamScore() {
-        let _score = 0;
-        this.teamPlayers.forEach(player => {
-            if (player.position !== "Bench") {
-                _score += player.playerScore;
-            }
-        });
-        return _score.toFixed(2);
-    }
+    // get teamScore() {
+    //     let _score = 0;
+    //     this.teamPlayers.forEach(player => {
+    //         if (player.position !== "Bench") {
+    //             _score += player.playerScore;
+    //         }
+    //     });
+    //     return _score.toFixed(2);
+    // }
 
-    get projectedScore() {
-        let _score = 0;
-        this.teamPlayers.forEach(player => {
-            if (player.position !== "Bench") {
-                _score += player.projected;
-            }
-        });
-        return _score.toFixed(2);
-    }
+    // get projectedScore() {
+    //     let _score = 0;
+    //     this.teamPlayers.forEach(player => {
+    //         if (player.position !== "Bench") {
+    //             _score += player.projected;
+    //         }
+    //     });
+    //     return _score.toFixed(2);
+    // }
 
     get playersYetToPlay() {
         let _count = 0;
         this.teamPlayers.forEach(player => {
             if (player.yetToPlay && player.position !== "Bench" && player.position !== "IR") {
-                console.log('player', player)
                 _count += 1;
             }
         });
@@ -193,13 +206,14 @@ class Team {
 }
 
 class Player {
-    constructor(playerName, playerScore, fantasyTeamId, position, team, projected, yetToPlay) {
-        this.playerName = playerName;
-        this.playerScore = playerScore;
-        this.position = position === 'RB/WR/TE' ? 'FLEX' : position;
-        this.team = team;
-        this.fantasyTeamId = fantasyTeamId;
-        this.projected = Number(projected.toFixed(2));
-        this.yetToPlay = yetToPlay;
+    constructor(player, teamId) {
+        this.playerName = player.fullName;
+        this.playerScore = player.totalPoints;
+        this.position = player.rosteredPosition === 'RB/WR/TE' ? 'FLEX' : player.rosteredPosition;
+        this.team = player.proTeamAbbreviation;
+        this.fantasyTeamId = teamId;
+        this.projected = Number(sumValues(player.projectedPointBreakdown).toFixed(2));
+        this.yetToPlay = !player.lineupLocked;
+        this.playerId = player.id;
     }
 }

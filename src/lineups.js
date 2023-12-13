@@ -104,14 +104,22 @@ const Game = ({ teams, matchup }) => {
         return sortOrder.indexOf(a.position) - sortOrder.indexOf(b.position);
     });
 
+    const getUrl = (player) => {
+        if (player.position === 'D/ST') {
+            return '/img/' + player.team.toLowerCase() + '.png';
+        }
+        return "https://a.espncdn.com/combiner/i?img=/i/headshots/nfl/players/full/" + player.playerId + ".png&w=350&h=254";
+    }
+
     let homePlayerContent = homeStarters.map((player) => {
         return (
-            <tr>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+            <tr style={{height: '3vw'}}>
+                <td style={{backgroundColor: getRowColor(player), width: '2vw'}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player), width: '3vw', }}><img src={getUrl(player)} width="35" height="24"/></td>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 <td style={{backgroundColor: getRowColor(player)}}>Proj: {player.projected}</td>
-                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{backgroundColor: getRowColor(player), textAlign: 'right', paddingRight: '5%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
@@ -120,8 +128,9 @@ const Game = ({ teams, matchup }) => {
 
     let awayPlayerContent = awayStarters.map((player) => {
         return (
-            <tr>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
+            <tr style={{height : '3vw'}}>
+                <td style={{backgroundColor: getRowColor(player), width: '2vw'}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player), width: '3vw'}}><img src={getUrl(player)} width="35" height="24" style={{margin: 'auto'}}/></td>
                 <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
                 <td style={{backgroundColor: getRowColor(player)}}>Proj: {player.projected}</td>
@@ -132,24 +141,26 @@ const Game = ({ teams, matchup }) => {
 
     let homeMobilePlayerContent = homeStarters.map((player) => {
         return (
-            <tr>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
-                <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
+            <tr style={{backgroundColor: getRowColor(player), }}>
+                <td style={{backgroundColor: getRowColor(player), fontSize: 'small', width: '0px'}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '9vw'}}><img src={getUrl(player)} width="35" height="25.4" style={{marginLeft: '-25%'}}/></td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw'}}>{player.playerName}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore === 0 ? '5%' : '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{verticalAlign: 'middle', textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore == 0 ? '5%' : '2%', fontSize: 'medium', width: '15vw'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
 
     let awayMobilePlayerContent = awayStarters.map((player) => {
         return (
-            <tr>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.position}</td>
-                <td style={{backgroundColor: getRowColor(player)}}>{player.playerName}</td>
-                <td style={{backgroundColor: getRowColor(player), width: '5vw'}}>{getTeamLogo(player)}</td>
+            <tr style={{backgroundColor: getRowColor(player), }}>
+                <td style={{backgroundColor: getRowColor(player), fontSize: 'small', width: '0px'}}>{player.position}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '9vw'}}><img src={getUrl(player)} width="35" height="25.4" style={{marginLeft: '-25%'}}/></td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw'}}>{player.playerName}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
-                <td style={{textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore === 0 ? '5%' : '1%', fontSize: 'medium'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
+                <td style={{verticalAlign: 'middle', textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore == 0 ? '5%' : '2%', fontSize: 'medium', width: '15vw'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
             </tr>
         )
     });
