@@ -157,7 +157,7 @@ const Game = ({ teams, matchup }) => {
             <tr style={{backgroundColor: getRowColor(player), }}>
                 <td style={{backgroundColor: getRowColor(player), fontSize: 'small', width: '0px'}}>{player.position}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '9vw'}}><img src={getUrl(player)} width="35" height="25.4" style={{marginLeft: '-25%'}}/></td>
-                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw'}}>{player.playerName}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw', fontSize: player.playerName != 'Pat Freiermuth' ? 'small' : 'smaller'}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
                 <td style={{verticalAlign: 'middle', textAlign: 'right', backgroundColor: getRowColor(player), paddingRight: player.playerScore == 0 ? '5%' : '2%', fontSize: 'medium', width: '15vw'}}>{player.playerScore === 0 ? '-' : player.playerScore.toFixed(2)}</td>
