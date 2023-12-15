@@ -37,7 +37,7 @@ const myClient = new Client({
 
 const currentWeek = 15;
 
-const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 13 });
+const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 15 });
 const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: 13, scoringPeriodId: currentWeek-1})
 
 const pastScores = {};
@@ -213,7 +213,7 @@ class Player {
         this.team = player.proTeamAbbreviation;
         this.fantasyTeamId = teamId;
         this.projected = Number(sumValues(player.projectedPointBreakdown).toFixed(2));
-        this.yetToPlay = !player.lineupLocked;
+        this.yetToPlay = !player.locked;
         this.playerId = player.id;
     }
 }
