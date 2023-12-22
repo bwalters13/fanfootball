@@ -30,6 +30,16 @@ export default function Stats({}) {
                 <Tab eventKey="draft" title="Points By Drafted Players">
                     <img src="/img/draft.png" className="plot"></img>
                 </Tab>
+                <Tab eventKey="round" title="Quarters Played By Round">
+                    <img src="/img/quarters.png" className="plot"></img>
+                </Tab>
+                <Tab eventKey="drive" title="Drives Played By Round">
+                    <img src="/img/drives.png" className="plot"></img>
+                </Tab>
+                <Tab eventKey="plays" title="Plays Played By Round">
+                    <img src="/img/plays.png" className="plot"></img>
+                </Tab>
+
             </Tabs>
         </div>
     )
