@@ -17,6 +17,9 @@ const MyNavbar = () => {
                                 <Nav.Link href="/">Scoreboard</Nav.Link>
                             </Col>
                             <Col>
+                                <Nav.Link href="/stats">Season Stats</Nav.Link>
+                            </Col>
+                            <Col>
                                 <Nav.Link href="/scores">Matchups</Nav.Link>
                             </Col>
                         </Row>

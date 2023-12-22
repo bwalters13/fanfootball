@@ -76,8 +76,9 @@ html {
 .lineups {
   width: 100%;
   margin: auto;
-
 }
+
+
 
 .table {
   margin: auto;
@@ -128,13 +129,13 @@ tr {
   }
 
   .teamName {
-    font-size: medium;
+    font-size: x-large !important;
     vertical-align: middle !important;
     padding-bottom: 5% !important;
   }
 
   .sb-detail {
-    font-size: small;
+    font-size: large;
   }
   #uncontrolled-tab-example-tab-game1 {
     font-size: xx-small !important;
@@ -179,6 +180,7 @@ tr {
 
   .matchup-card {
     width: 100% !important;
+    height: 150% !important;
   }
 
   .card-body {

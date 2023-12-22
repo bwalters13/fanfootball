@@ -11,6 +11,7 @@ import Stack from 'react-bootstrap/Stack';
 import Navbar from 'react-bootstrap/Navbar';
 import Scoreboard from './Scoreboard.js';
 import Lineups from './lineups.js';
+import Stats from './Stats.js';
 import {
     BrowserRouter as Router,
     Routes,
@@ -21,12 +22,11 @@ const s2 = 'AEBLbPeWIC61WxXB2%2F0rCLG2Lc2MPBG9bd6kCKAEfGZo3IOR%2Fjxv6sZqmsko9aie
 const swid = '{C0029F35-8FC0-4E99-B1F3-74350A1A393F}';
 
 const matchups = [
-    {homeTeam: 12, awayTeam: 7},
-    {homeTeam: 14, awayTeam: 13}
+    {homeTeam: 12, awayTeam: 13}
 ]
 
 
-const relevantTeams = [ 12, 7, 14, 13 ];
+const relevantTeams = [ 12, 13 ];
 
 const myClient = new Client({ 
     leagueId: 1194235,
@@ -35,18 +35,18 @@ const myClient = new Client({
     SWID: swid,
 });
 
-const currentWeek = 15;
+const currentWeek = 16;
 
-const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 15 });
-const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: 13, scoringPeriodId: currentWeek-1})
+const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 16 });
+const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: 14, scoringPeriodId: currentWeek-1})
 
 const pastScores = {};
 
 oldBoxscore.forEach((boxscore) => {
     if (relevantTeams.includes(boxscore.homeTeamId)) {
-        pastScores[boxscore.homeTeamId] = boxscore.homeWeekly[14];
+        pastScores[boxscore.homeTeamId] = boxscore.homeWeekly[15];
     } else if (relevantTeams.includes(boxscore.awayTeamId)) {
-        pastScores[boxscore.awayTeamId] = boxscore.awayWeekly[14];
+        pastScores[boxscore.awayTeamId] = boxscore.awayWeekly[15];
     }
 });
 
@@ -106,10 +106,12 @@ export default function App() {
         let boxscores = await myClient.getBoxscoreForWeek({ seasonId: 2023, matchupPeriodId: 14, scoringPeriodId: currentWeek });
         console.log('boxscores:', boxscores);
         boxscores = boxscores.filter((boxscore) => relevantTeams.includes(boxscore.homeTeamId) || relevantTeams.includes(boxscore.awayTeamId));
+        console.log('filtered boxscores:', boxscores)
         boxscores.forEach(boxscore => {
             if (relevantTeams.includes(boxscore.homeTeamId)) {
                 let homeTeamInfo = teamInfo.filter((team) => team.id === boxscore.homeTeamId);
-                let homeTeam = new Team(boxscore.homeTeamId, boxscore.homeScore, homeTeamInfo[0].name, pastScores[boxscore.homeTeamId], boxscore.homeProjectedScore);
+                let homeTeam = new Team(boxscore.homeTeamId, boxscore.homeScore, homeTeamInfo[0].name, boxscore.homeWeekly[15], boxscore.homeProjectedScore);
+                console.log('homeTeam', homeTeam)
                 boxscore.homeRoster.forEach(player => {
                     // let newPlayer = new Player(player.fullName, player.totalPoints, boxscore.homeTeamId, player.rosteredPosition, player.proTeamAbbreviation, sumValues(player.projectedPointBreakdown), yetToPlay);
                     let newPlayer = new Player(player, boxscore.homeTeamId);
@@ -119,7 +121,7 @@ export default function App() {
             }
             if ('awayTeamId' in boxscore && relevantTeams.includes(boxscore.awayTeamId)) {
                 let awayTeamInfo = teamInfo.filter((team) => team.id === boxscore.awayTeamId);
-                let awayTeam = new Team(boxscore.awayTeamId, boxscore.awayScore, awayTeamInfo[0].name, pastScores[boxscore.awayTeamId], boxscore.awayProjectedScore);
+                let awayTeam = new Team(boxscore.awayTeamId, boxscore.awayScore, awayTeamInfo[0].name, boxscore.awayWeekly[15], boxscore.awayProjectedScore);
                 boxscore.awayRoster.forEach(player => {
                     let newPlayer = new Player(player, boxscore.awayTeamId);
                     awayTeam.addPlayer(newPlayer);
@@ -138,6 +140,7 @@ export default function App() {
         async function fetchData() {
             if (!loaded) {
                 await loadRosters();
+                console.log(teams);
             } else {
                 console.log(teams)
             }
@@ -152,6 +155,7 @@ export default function App() {
             <Routes>
                 <Route exact path="/" element={<Scoreboard loaded={loaded} teams={teams} matchups={matchups}/>}/>
                 <Route path="/scores" element={<Lineups loaded={loaded} teams={teams} matchups={matchups}/>}/>
+                <Route path="/stats" element={<Stats/>}/>
             </Routes>
         </Router>
     );
@@ -160,12 +164,12 @@ export default function App() {
 
 class Team {
     constructor(teamId, score, teamName, pastScore, projectedScore) {
-        this.teamScore = Number(score + pastScore).toFixed(2);
+        this.teamScore = Number(score - pastScore).toFixed(2);
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamPlayers = [];
         this.pastScore = pastScore;
-        this.projectedScore = Number(projectedScore + pastScore).toFixed(2);
+        this.projectedScore = Number(projectedScore - pastScore).toFixed(2);
     }
 
     // get teamScore() {

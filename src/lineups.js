@@ -58,9 +58,6 @@ const Lineups = ({ loaded, teams, matchups }) => {
                 <Tab eventKey="game1" title={getMatchupString(matchups[0])}>
                     <Game teams={teams} matchup={matchups[0]}/>
                 </Tab>
-                <Tab eventKey="game2" title={getMatchupString(matchups[1])}>
-                    <Game teams={teams} matchup={matchups[1]}/>
-                </Tab>
             </Tabs>
         </div>
     );
@@ -91,12 +88,15 @@ const Game = ({ teams, matchup }) => {
     }
 
     const getRowColor = (player) => {
+        console.log(player.team)
         return data.find((row) => row.team_abbr === player.team).team_color;
     }
 
     homeStarters.sort((a, b) => {
         return sortOrder.indexOf(a.position) - sortOrder.indexOf(b.position);
     });
+
+    console.log('lineups home team', teams);
 
     let awayStarters = awayTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
 
@@ -144,7 +144,7 @@ const Game = ({ teams, matchup }) => {
             <tr style={{backgroundColor: getRowColor(player), }}>
                 <td style={{backgroundColor: getRowColor(player), fontSize: 'small', width: '0px'}}>{player.position}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '9vw'}}><img src={getUrl(player)} width="35" height="25.4" style={{marginLeft: '-25%'}}/></td>
-                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw', fontSize: player.playerName != 'Pat Freiermuth' ? 'small' : 'smaller'}}>{player.playerName}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw', fontSize: player.playerName != 'Commanders D/ST' ? 'small' : 'smaller'}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
                 <td 
@@ -160,7 +160,7 @@ const Game = ({ teams, matchup }) => {
             <tr style={{backgroundColor: getRowColor(player), }}>
                 <td style={{backgroundColor: getRowColor(player), fontSize: 'small', width: '0px'}}>{player.position}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '9vw'}}><img src={getUrl(player)} width="35" height="25.4" style={{marginLeft: '-25%'}}/></td>
-                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw', fontSize: player.playerName != 'Pat Freiermuth' ? 'small' : 'smaller'}}>{player.playerName}</td>
+                <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle', width: '14vw', fontSize: player.playerName != 'Commanders D/ST' ? 'small' : 'x-small'}}>{player.playerName}</td>
                 <td style={{backgroundColor: getRowColor(player), verticalAlign: 'middle'}}>{getTeamLogo(player)}</td>
                 {/* <td>{player.projected}</td> */}
                 <td 

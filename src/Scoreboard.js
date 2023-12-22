@@ -47,12 +47,12 @@ export default function Scoreboard({ loaded, teams, matchups }) {
                                 <Container>
                                     <Row>
                                         <div style={{width: '50%'}}>
-                                            <Col><img style={{borderRadius: '30px'}} height="30" width="30" src={teamPictures[matchup.homeTeam]}></img></Col>
+                                            <Col><img style={{borderRadius: '30px'}} className="picture1" height="50" width="50" src={teamPictures[matchup.homeTeam]}></img></Col>
                                             <Col className="teamName">{teams[matchup.homeTeam].teamName}</Col>
                                         </div>
                                         <div style={{width: '50%'}}>
-                                            <Col><img style={{borderRadius: '30px'}} height="30" width="30" src={teamPictures[matchup.awayTeam]}></img></Col>
-                                            <Col className="teamName">{teams[matchup.awayTeam].teamName}</Col>
+                                            <Col><img style={{borderRadius: '30px'}} className="picture2" height="50" width="50" src={teamPictures[matchup.awayTeam]}></img></Col>
+                                            <Col className="teamName">{teams[matchup.awayTeam].teamName.split(' ')[0]}<br/>{teams[matchup.awayTeam].teamName.split(' ')[1]}</Col>
                                         </div>
                                     </Row>
                                 </Container>
@@ -60,8 +60,8 @@ export default function Scoreboard({ loaded, teams, matchups }) {
                             <Card.Text>
                                 <Container>
                                     <Row>
-                                        <Col style={{paddingBottom: '5%'}}>{teams[matchup.homeTeam].teamScore}</Col>
-                                        <Col style={{paddingBottom: '5%'}}>{teams[matchup.awayTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '10%', fontSize: "x-large"}}>{teams[matchup.homeTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '10%', fontSize: "x-large"}}>{teams[matchup.awayTeam].teamScore}</Col>
                                     </Row>
                                     <Row>
                                         <Col className="sb-detail">Projected Score:</Col>
@@ -91,6 +91,7 @@ export default function Scoreboard({ loaded, teams, matchups }) {
     return (
         <div className="Scoreboard">
             <MyNavbar/>
+            <img height="100" width="100" src="/img/belt.jpg" className="belt"></img>
             <Stack direction={direction} style={{ margin: 'auto'}}>
                 {scoreContent}
             </Stack>
