@@ -9,12 +9,12 @@ export default function Stats({}) {
         <div>
             <MyNavbar/>
             <Tabs defaultActiveKey="troll" className="mb-3" fill={true} variant='pills' style={{paddingTop: '2%'}}>
-                <Tab eventKey="troll" title="Troll" className='troll'>
+                <Tab eventKey="troll" title="Spencer was the most trolled plot" className='troll'>
                     <div>
                         <img src="/img/troll_plot.png" className="plot"></img>
                     </div>
                 </Tab>
-                <Tab eventKey="troll_index" title="Troll Standings">
+                <Tab eventKey="troll_index" title="Spencer was the most trolled">
                     <img src="/img/troll_index.png" className="plot"></img>
                 </Tab>
                 <Tab eventKey="best_ball" title="Best Ball Standings">
