@@ -6,6 +6,11 @@
     width: 40%;
 }
 
+.belt {
+    width: auto;
+    height: 40vh;
+}
+
 .nav-item {
     background-color: #ff3366;
     border: 1px #712cf9 solid;
