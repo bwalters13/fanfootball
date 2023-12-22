@@ -5,6 +5,10 @@
     margin-right: auto;
     width: 40%;
 }
+.plot {
+    height: 100%;
+    width: auto;
+}
 
 .belt {
     width: auto;
@@ -20,6 +24,12 @@
 .nav-link {
     color: black;
 
+}
+
+.dropdown {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 
