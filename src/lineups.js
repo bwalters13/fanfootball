@@ -35,7 +35,7 @@ const teamPictures = {
     13: '/img/saum.png'
 }
 
-const Lineups = ({ loaded, teams, matchups, refreshFunc }) => {
+const Lineups = ({ loaded, teams, matchups, refreshFunc, simulated }) => {
     if (!loaded) {
         return (
             <div>
@@ -51,20 +51,26 @@ const Lineups = ({ loaded, teams, matchups, refreshFunc }) => {
         return homeTeam.teamName + ' vs. ' + awayTeam.teamName;
     }
 
+    if (simulated) {
+        return (
+            <Game teams={teams} matchup={matchups[0]} refreshFunc={refreshFunc} simulated={simulated}/>
+        )
+    }
+
 
     return (
         <div>
             <MyNavbar/>
             <Tabs defaultActiveKey="game1" id="uncontrolled-tab-example" className="mb-3" justify="true">
                 <Tab eventKey="game1" title={getMatchupString(matchups[0])}>
-                    <Game teams={teams} matchup={matchups[0]} refreshFunc={refreshFunc}/>
+                    <Game teams={teams} matchup={matchups[0]} refreshFunc={refreshFunc} simulated={simulated}/>
                 </Tab>
             </Tabs>
         </div>
     );
 };
 
-const Game = ({ teams, matchup, refreshFunc }) => {
+const Game = ({ teams, matchup, refreshFunc, simulated }) => {
 
     const [width, setWidth] = useState(window.innerWidth);
     const [seed, setSeed] = useState(0);
@@ -226,7 +232,9 @@ const Game = ({ teams, matchup, refreshFunc }) => {
                 </thead>
             )
         }
-    }
+    }   
+
+    let [clickCount, setClickCount] = useState(0);
 
     const simulate = () => {
         let homeScore = 0;
@@ -243,7 +251,17 @@ const Game = ({ teams, matchup, refreshFunc }) => {
         awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
         console.log(homeScore);
         setSeed(Math.random());
+        setClickCount(clickCount + 1);
     }
+
+    let backgroundAway = 'dark';
+    let backgroundHome = 'dark';
+
+    if (simulated) {
+        backgroundHome = homeTeam.teamScore > awayTeam.teamScore ? 'success' : 'danger';
+        backgroundAway = awayTeam.teamScore > homeTeam.teamScore ? 'success' : 'danger';
+    }
+
 
 
     
@@ -254,12 +272,12 @@ const Game = ({ teams, matchup, refreshFunc }) => {
         <Container>
             <div className="top-score">
                 <div style={{width: '100%',display: 'flex', justifyContent: 'space-around'}}>
-                    <Button variant="primary" onClick={simulate}>Simulate Matchup</Button>
-                    <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'rgb(13, 110, 253)'}} onClick={refreshFunc}>
+                    <Button variant="primary" onClick={simulate}>{clickCount === 0 ? 'Simulate Matchup' : 'Re-Simulate'}</Button>
+                    <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'rgb(13, 110, 253)', display: simulated === true ? 'none' : 'block'}} onClick={refreshFunc}>
                         <ArrowClockwise title="refresh" size={32}/>Refresh
                     </button>
-                    <Button variant="primary" onClick={refreshFunc}>Reset Scores</Button></div>
-                <Card bg='dark' text="white" className="teamSum">
+                    <Button variant="primary" onClick={refreshFunc} style={{display: simulated === true ? 'none' : 'block'}}>Reset Scores</Button></div>
+                <Card bg={backgroundHome} text="white" className="teamSum" style={{backgroundColor: 'red'}}>
                     <Card.Body>
                         <Card.Text>
                             <div className='homeTeam div-sum'>
@@ -277,7 +295,7 @@ const Game = ({ teams, matchup, refreshFunc }) => {
                         </Card.Text>
                     </Card.Body>
                 </Card>
-                <Card bg='dark' text="white" className='teamSum'>
+                <Card bg={backgroundAway} text="white" className='teamSum'>
                     <Card.Body>
                         <Card.Text>
                             <div className='awayTeam div-sum'>

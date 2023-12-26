@@ -2,14 +2,16 @@ import logo from './logo.svg';
 import './Scoreboard.css';
 import React, { Component, useEffect, useState } from 'react';
 import { Client } from 'espn-fantasy-football-api';
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import MyNavbar from './Navbar.js';
-import { ArrowClockwise } from 'react-bootstrap-icons';
+import { ArrowClockwise, Calculator, XCircleFill } from 'react-bootstrap-icons';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Lineups from './lineups.js';
 
 const teamPictures = {
     12: '/img/me.jpg',
@@ -37,7 +39,33 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
         }
     }, []);
 
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     const isMobile = width <= 768;
+    const simulate = () => {
+        let simTeams = {...teams};
+        let homeTeam = simTeams[12];
+        let awayTeam = simTeams[13];
+        let homeStarters = homeTeam.teamPlayers;
+        let awayStarters = awayTeam.teamPlayers;
+        let homeScore = 0;
+        let awayScore = 0;
+        homeStarters.forEach((player) => {
+            player.playerScore = player.random;
+            homeScore += player.playerScore;
+        });
+        awayStarters.forEach((player) => {
+            player.playerScore = player.random;
+            awayScore += player.playerScore;
+        });
+        homeTeam.teamScore = (homeScore + homeTeam.pastScore).toFixed(2);
+        awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
+        console.log(homeScore);
+        return simTeams;
+    }
 
     if (loaded) {
         let wins = 0;
@@ -54,8 +82,15 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
             return (
                 <div className="p-2" style={{ margin: 'auto', height: '80%', }}>
                     <div style={{width: '100%', display: 'flex'}}>
+                    <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={handleShow}><Calculator size={32}/>Simulate</button>
+                            <Modal dialogClassName="my-modal" show={show} onHide={handleClose} fullscreen={true}>
+                                <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={handleClose}><XCircleFill size={32}/>Close</button>
+                                <Modal.Body>
+                                <Lineups loaded={loaded} teams={simulate()} matchups={matchups} refreshFunc={refreshFunc} simulated={true}></Lineups>
+                                </Modal.Body>
+                            </Modal>
                         <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={refreshFunc}>
-                            <ArrowClockwise size={32}/>
+                            <ArrowClockwise size={32}/>Refresh
                         </button>
                     </div>
                     <Card style={{margin: 'auto'}} data-bs-theme="dark" className="matchup-card">
