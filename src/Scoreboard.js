@@ -9,6 +9,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Stack from 'react-bootstrap/Stack';
 import MyNavbar from './Navbar.js';
+import { ArrowClockwise } from 'react-bootstrap-icons';
 
 const teamPictures = {
     12: '/img/me.jpg',
@@ -20,7 +21,8 @@ const teamPictures = {
 
 
 
-export default function Scoreboard({ loaded, teams, matchups }) {
+export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
+    
     let scoreContent = [];
 
     const [width, setWidth] = useState(window.innerWidth);
@@ -38,9 +40,24 @@ export default function Scoreboard({ loaded, teams, matchups }) {
     const isMobile = width <= 768;
 
     if (loaded) {
+        let wins = 0;
+        for (let i = 0; i < 10000; i++) {
+            if ((teams[12].sims[i] + Number(teams[12].teamScore)) > (teams[13].sims[i] + Number(teams[13].teamScore))) {
+                wins++;
+            }
+        }
+        teams[12].wp = (Math.min(wins / 1000, 0.99));
+        teams[13].wp = Number(1 - teams[12].wp);
+
+        console.log('wins: ', wins);
         scoreContent = matchups.map((matchup) => {
             return (
                 <div className="p-2" style={{ margin: 'auto', height: '80%', }}>
+                    <div style={{width: '100%', display: 'flex'}}>
+                        <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={refreshFunc}>
+                            <ArrowClockwise size={32}/>
+                        </button>
+                    </div>
                     <Card style={{margin: 'auto'}} data-bs-theme="dark" className="matchup-card">
                         <Card.Body>
                             <Card.Title>
@@ -60,8 +77,12 @@ export default function Scoreboard({ loaded, teams, matchups }) {
                             <Card.Text>
                                 <Container>
                                     <Row>
-                                        <Col style={{paddingBottom: '10%', fontSize: "x-large"}}>{teams[matchup.homeTeam].teamScore}</Col>
-                                        <Col style={{paddingBottom: '10%', fontSize: "x-large"}}>{teams[matchup.awayTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '5%', fontSize: "x-large"}}>{teams[matchup.homeTeam].teamScore}</Col>
+                                        <Col style={{paddingBottom: '5%', fontSize: "x-large"}}>{teams[matchup.awayTeam].teamScore}</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col className="sb-detail" style={{paddingBottom: '5%', fontSize: "medium"}}>Win Probability:<br/> {(teams[matchup.homeTeam].wp*100).toFixed(0) + '%'}</Col>
+                                        <Col className="sb-detail" style={{paddingBottom: '5%', fontSize: "medium"}}>Win Probability:<br/> {(teams[matchup.awayTeam].wp*100).toFixed(0) + '%'}</Col>
                                     </Row>
                                     <Row>
                                         <Col className="sb-detail">Projected Score:</Col>

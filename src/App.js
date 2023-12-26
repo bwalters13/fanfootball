@@ -12,6 +12,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Scoreboard from './Scoreboard.js';
 import Lineups from './lineups.js';
 import Stats from './Stats.js';
+import sims from './sims.json';
 import {
     BrowserRouter as Router,
     Routes,
@@ -35,20 +36,53 @@ const myClient = new Client({
     SWID: swid,
 });
 
-const currentWeek = 16;
+const boxMullerTransform = () => {
+    const u1 = Math.random();
+    const u2 = Math.random();
+    
+    const z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    const z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
+    
+    return { z0, z1 };
+}
 
-const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 16 });
-const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: 14, scoringPeriodId: currentWeek-1})
+const getNormallyDistributedRandomNumber = (mean, stddev) => {
+    const { z0, _ } = boxMullerTransform();
+    
+    return z0 * stddev + mean;
+}
+
+
+
+
+const leagueInfo = await myClient.getLeagueInfo({ seasonId: 2023 });
+const currentWeek = leagueInfo.currentScoringPeriodId;
+const currentMatchup = leagueInfo.currentMatchupPeriodId;
+
+console.log(currentMatchup, currentWeek);
+
+const teamInfo = await myClient.getTeamsAtWeek({ seasonId: 2023, scoringPeriodId: 17 });
+const oldBoxscore = await myClient.getBoxscoreForWeek({seasonId: 2023, matchupPeriodId: currentMatchup-1, scoringPeriodId: currentWeek-1})
 
 const pastScores = {};
 
 oldBoxscore.forEach((boxscore) => {
     if (relevantTeams.includes(boxscore.homeTeamId)) {
-        pastScores[boxscore.homeTeamId] = boxscore.homeWeekly[15];
+        pastScores[boxscore.homeTeamId] = boxscore.homeWeekly[currentWeek-1];
     } else if (relevantTeams.includes(boxscore.awayTeamId)) {
-        pastScores[boxscore.awayTeamId] = boxscore.awayWeekly[15];
+        pastScores[boxscore.awayTeamId] = boxscore.awayWeekly[currentWeek-1];
     }
 });
+
+function filterByInnerObjectKeys(obj, filterKey) {
+    let newObj = {}
+    Object.entries(obj).forEach(([key, value]) => {
+        newObj[key] = value.sims;
+    });
+    return newObj;
+}
+
+console.log(sims);
 
 console.log(pastScores);
 console.log(teamInfo)
@@ -103,46 +137,55 @@ export default function App() {
 
     const loadRosters = async() => {
         const allTeams = {};
-        let boxscores = await myClient.getBoxscoreForWeek({ seasonId: 2023, matchupPeriodId: 14, scoringPeriodId: currentWeek });
+        let boxscores = await myClient.getBoxscoreForWeek({ seasonId: 2023, matchupPeriodId: currentMatchup, scoringPeriodId: currentWeek });
         console.log('boxscores:', boxscores);
         boxscores = boxscores.filter((boxscore) => relevantTeams.includes(boxscore.homeTeamId) || relevantTeams.includes(boxscore.awayTeamId));
         console.log('filtered boxscores:', boxscores)
         boxscores.forEach(boxscore => {
             if (relevantTeams.includes(boxscore.homeTeamId)) {
                 let homeTeamInfo = teamInfo.filter((team) => team.id === boxscore.homeTeamId);
-                let homeTeam = new Team(boxscore.homeTeamId, boxscore.homeScore, homeTeamInfo[0].name, boxscore.homeWeekly[15], boxscore.homeProjectedScore);
+                let homeTeam = new Team(boxscore.homeTeamId, boxscore.homeScore, homeTeamInfo[0].name, pastScores[boxscore.homeTeamId], boxscore.homeProjectedScore);
                 console.log('homeTeam', homeTeam)
                 boxscore.homeRoster.forEach(player => {
+                    if (player.rosteredPosition !== 'Bench' && player.rosteredPosition !== 'IR') {
                     // let newPlayer = new Player(player.fullName, player.totalPoints, boxscore.homeTeamId, player.rosteredPosition, player.proTeamAbbreviation, sumValues(player.projectedPointBreakdown), yetToPlay);
-                    let newPlayer = new Player(player, boxscore.homeTeamId);
-                    homeTeam.addPlayer(newPlayer);
+                        let newPlayer = new Player(player, boxscore.homeTeamId);
+                        homeTeam.addPlayer(newPlayer);
+                    }
                 });
+                homeTeam.sims = sims[boxscore.homeTeamId];
                 allTeams[boxscore.homeTeamId] = homeTeam;
             }
             if ('awayTeamId' in boxscore && relevantTeams.includes(boxscore.awayTeamId)) {
                 let awayTeamInfo = teamInfo.filter((team) => team.id === boxscore.awayTeamId);
-                let awayTeam = new Team(boxscore.awayTeamId, boxscore.awayScore, awayTeamInfo[0].name, boxscore.awayWeekly[15], boxscore.awayProjectedScore);
+                let awayTeam = new Team(boxscore.awayTeamId, boxscore.awayScore, awayTeamInfo[0].name, pastScores[boxscore.awayTeamId], boxscore.awayProjectedScore);
                 boxscore.awayRoster.forEach(player => {
-                    let newPlayer = new Player(player, boxscore.awayTeamId);
-                    awayTeam.addPlayer(newPlayer);
+                    if (player.rosteredPosition !== 'Bench' && player.rosteredPosition !== 'IR') {
+                        let newPlayer = new Player(player, boxscore.awayTeamId);
+                        console.log('player:', player);
+                        awayTeam.addPlayer(newPlayer);
+                    }
                 });
+                awayTeam.sims = sims[boxscore.awayTeamId];
                 allTeams[boxscore.awayTeamId] = awayTeam;
+                
             }
+
+            
 
             
         });
         setTeams(allTeams);
         setLoaded(true);
-        console.log(teams);
     }   
 
     useEffect(() => {
         async function fetchData() {
             if (!loaded) {
                 await loadRosters();
-                console.log(teams);
             } else {
                 console.log(teams)
+                console.log(filterByInnerObjectKeys(teams, 'sims'));
             }
         }
 
@@ -153,8 +196,8 @@ export default function App() {
     return (
         <Router>
             <Routes>
-                <Route exact path="/" element={<Scoreboard loaded={loaded} teams={teams} matchups={matchups}/>}/>
-                <Route path="/scores" element={<Lineups loaded={loaded} teams={teams} matchups={matchups}/>}/>
+                <Route exact path="/" element={<Scoreboard loaded={loaded} teams={teams} matchups={matchups} refreshFunc={loadRosters}/>}/>
+                <Route path="/scores" element={<Lineups loaded={loaded} teams={teams} matchups={matchups} refreshFunc={loadRosters}/>}/>
                 <Route path="/stats" element={<Stats/>}/>
             </Routes>
         </Router>
@@ -164,13 +207,41 @@ export default function App() {
 
 class Team {
     constructor(teamId, score, teamName, pastScore, projectedScore) {
-        this.teamScore = Number(score - pastScore).toFixed(2);
+        this.teamScore = Number(score + pastScore).toFixed(2);
         this.teamId = teamId;
         this.teamName = teamName;
         this.teamPlayers = [];
         this.pastScore = pastScore;
-        this.projectedScore = Number(projectedScore - pastScore).toFixed(2);
+        this.projectedScore = Number(projectedScore + pastScore).toFixed(2);
     }
+
+    get ceiling() {
+        let _ceiling = 0;
+        this.teamPlayers.forEach(player => {
+            _ceiling += player.ceiling;
+        });
+        return _ceiling + this.pastScore;
+    }
+
+    get floor () {
+        let _floor = 0;
+        this.teamPlayers.forEach(player => {
+            _floor += player.floor;
+        });
+        return _floor + this.pastScore;
+    }
+
+    // get simScores() {
+    //     let _scores = [];
+    //     for (let i = 0; i < 1; i++) {
+    //         let _score = 0;
+    //         this.teamPlayers.forEach(player => {
+    //             _score += player.random;
+    //         });
+    //         _scores.push(_score);
+    //     }
+    //     return _scores;
+    // }
 
     // get teamScore() {
     //     let _score = 0;
@@ -209,9 +280,12 @@ class Team {
     }
 }
 
+
+
 class Player {
     constructor(player, teamId) {
         this.playerName = player.fullName;
+        this.playerObj = player;
         this.playerScore = player.totalPoints;
         this.position = player.rosteredPosition === 'RB/WR/TE' ? 'FLEX' : player.rosteredPosition;
         this.team = player.proTeamAbbreviation;
@@ -219,5 +293,166 @@ class Player {
         this.projected = Number(sumValues(player.projectedPointBreakdown).toFixed(2));
         this.yetToPlay = !player.locked;
         this.playerId = player.id;
+        let ceilingFloor = this.getCeilingFloor(player);
+        this.ceiling = ceilingFloor.ceiling;
+        this.floor = ceilingFloor.floor;
+    }
+
+    get random() {
+        let points = 0;
+        Object.keys(this.playerObj.projectedRawStats).forEach(stat => {
+            let val = 0;
+            switch (stat) {
+                case 'passingYards':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;    
+                    points += val * 0.04;
+                    break;
+                case 'rushingYards':
+                case 'receivingYards':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 0.1;
+                    break;
+                case 'passingTouchdowns':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 4;
+                    break;
+                case 'rushingTouchdowns':
+                case 'receivingTouchdowns':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 6;
+                    break;
+                case 'receivingReceptions':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val;
+                    break;
+                case 'passingInterceptions':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * -2;
+                    break;
+                case 'passing2PtConversions':
+                case 'rushing2PtConversions':
+                case 'receiving2PtConversions':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 2;
+                    break;
+                case 'lostFumbles':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * -2;
+                    break;
+                case 'defensiveSacks':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val;
+                    break;
+                case 'defensiveBlockedKickForTouchdowns':
+                case 'interceptionReturnTouchdown':
+                case 'fumbleReturnTouchdown':
+                case 'puntReturnTouchdown':
+                case 'kickoffReturnTouchdown':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 6;
+                    break;
+                case 'defensiveInterceptions':
+                case 'defensiveFumbles':
+                case 'defensiveSafeties':
+                case 'defensiveBlockedKicks':
+                    val = getNormallyDistributedRandomNumber(this.playerObj.projectedRawStats[stat], this.playerObj.projectedVariance[stat]**(1/2));
+                    val = val < 0 ? 0 : val;
+                    points += val * 2;
+                    break;
+                
+                default:
+                    if (stat in this.playerObj.projectedPointBreakdown && stat !== 'usesPoints') {
+                        points += this.playerObj.projectedPointBreakdown[stat];
+                    }
+                    break;
+            }
+        });
+        return points;
+    }
+
+
+    
+
+    getCeilingFloor(player) {
+        let ceiling = 0;
+        let floor = 0;
+        Object.keys(player.projectedRawStats).forEach(stat => {
+            switch (stat) {
+                case 'passingYards':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 0.04;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 0.04;
+                    break;
+                case 'rushingYards':
+                case 'receivingYards':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 0.1;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 0.1;
+                    break;
+                case 'passingTouchdowns':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 4;
+                    ceiling += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 4;
+                    break;
+                case 'rushingTouchdowns':
+                case 'receivingTouchdowns':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 6;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 6;
+                    break;
+                case 'receivingReceptions':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]);
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]);
+                    break;
+                case 'passingInterceptions':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * -2;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * -2;
+                    break;
+                case 'passing2PtConversions':
+                case 'rushing2PtConversions':
+                case 'receiving2PtConversions':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 2;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 2;
+                    break;
+                case 'lostFumbles':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * -2;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * -2;
+                    break;
+                case 'defensiveSacks':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 1;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 1;
+                    break;
+                case 'defensiveBlockedKickForTouchdowns':
+                case 'interceptionReturnTouchdown':
+                case 'fumbleReturnTouchdown':
+                case 'puntReturnTouchdown':
+                case 'kickoffReturnTouchdown':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 6;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 6; 
+                    break;
+                case 'defensiveInterceptions':
+                case 'defensiveFumbles':
+                case 'defensiveSafeties':
+                case 'defensiveBlockedKicks':
+                    ceiling += (player.projectedRawStats[stat] + player.projectedVariance[stat]) * 2;
+                    floor += (player.projectedRawStats[stat] - player.projectedVariance[stat]) < 0 ? 0: (player.projectedRawStats[stat] - player.projectedVariance[stat]) * 2;
+                    break;
+                
+                default:
+                    if (stat in player.projectedPointBreakdown && stat !== 'usesPoints') {
+                        ceiling += player.projectedPointBreakdown[stat];
+                        floor += player.projectedPointBreakdown[stat];
+                    }
+                    break;
+            }
+            
+        });
+        return {ceiling: ceiling, floor: floor};
     }
 }

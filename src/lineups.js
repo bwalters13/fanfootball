@@ -11,6 +11,8 @@ import React, { Component, useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import teamCSV from './teams.csv';
 import { Container } from 'react-bootstrap';
+import { ArrowClockwise } from 'react-bootstrap-icons';
+import Button from 'react-bootstrap/Button';
 
 const sortOrder = ['QB', 'RB', 'WR', 'TE', 'FLEX', 'K', 'D/ST'];
 let data = undefined;
@@ -33,7 +35,7 @@ const teamPictures = {
     13: '/img/saum.png'
 }
 
-const Lineups = ({ loaded, teams, matchups }) => {
+const Lineups = ({ loaded, teams, matchups, refreshFunc }) => {
     if (!loaded) {
         return (
             <div>
@@ -42,7 +44,6 @@ const Lineups = ({ loaded, teams, matchups }) => {
         )
     }
 
-    console.log('data', data);
 
     const getMatchupString = (matchup) => {
         let homeTeam = teams[matchup.homeTeam];
@@ -56,16 +57,17 @@ const Lineups = ({ loaded, teams, matchups }) => {
             <MyNavbar/>
             <Tabs defaultActiveKey="game1" id="uncontrolled-tab-example" className="mb-3" justify="true">
                 <Tab eventKey="game1" title={getMatchupString(matchups[0])}>
-                    <Game teams={teams} matchup={matchups[0]}/>
+                    <Game teams={teams} matchup={matchups[0]} refreshFunc={refreshFunc}/>
                 </Tab>
             </Tabs>
         </div>
     );
 };
 
-const Game = ({ teams, matchup }) => {
+const Game = ({ teams, matchup, refreshFunc }) => {
 
     const [width, setWidth] = useState(window.innerWidth);
+    const [seed, setSeed] = useState(0);
 
     function handleWindowSizeChange() {
         setWidth(window.innerWidth);
@@ -82,13 +84,13 @@ const Game = ({ teams, matchup }) => {
     let homeTeam = teams[matchup.homeTeam];
     let awayTeam = teams[matchup.awayTeam];
     let homeStarters = homeTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
+    console.log(homeTeam.ceiling, homeTeam.floor);
 
     const getTeamLogo = (player) => { 
         return <img style={{margin: 'auto'}} src={'/img/' + player.team.toLowerCase() + '.png'} height="30" width="30" ></img>
     }
 
     const getRowColor = (player) => {
-        console.log(player.team)
         return data.find((row) => row.team_abbr === player.team).team_color;
     }
 
@@ -96,7 +98,6 @@ const Game = ({ teams, matchup }) => {
         return sortOrder.indexOf(a.position) - sortOrder.indexOf(b.position);
     });
 
-    console.log('lineups home team', teams);
 
     let awayStarters = awayTeam.teamPlayers.filter((player) => player.position !== "Bench" && player.position !== "IR");
 
@@ -227,6 +228,24 @@ const Game = ({ teams, matchup }) => {
         }
     }
 
+    const simulate = () => {
+        let homeScore = 0;
+        let awayScore = 0;
+        homeStarters.forEach((player) => {
+            player.playerScore = player.random;
+            homeScore += player.playerScore;
+        });
+        awayStarters.forEach((player) => {
+            player.playerScore = player.random;
+            awayScore += player.playerScore;
+        });
+        homeTeam.teamScore = (homeScore + homeTeam.pastScore).toFixed(2);
+        awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
+        console.log(homeScore);
+        setSeed(Math.random());
+    }
+
+
     
 
     let sz = isMobile ? 'sm' : 'md';
@@ -234,6 +253,12 @@ const Game = ({ teams, matchup }) => {
     return (
         <Container>
             <div className="top-score">
+                <div style={{width: '100%',display: 'flex', justifyContent: 'space-around'}}>
+                    <Button variant="primary" onClick={simulate}>Simulate Matchup</Button>
+                    <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'rgb(13, 110, 253)'}} onClick={refreshFunc}>
+                        <ArrowClockwise title="refresh" size={32}/>Refresh
+                    </button>
+                    <Button variant="primary" onClick={refreshFunc}>Reset Scores</Button></div>
                 <Card bg='dark' text="white" className="teamSum">
                     <Card.Body>
                         <Card.Text>
@@ -244,6 +269,9 @@ const Game = ({ teams, matchup }) => {
                                 <Row>
                                     <div className="score">{homeTeam.teamScore}</div>
                                     <div style={{fontSize: 'x-small'}}>Proj: {homeTeam.projectedScore}</div>
+                                </Row>
+                                <Row>
+                                    <div style={{fontSize: 'x-small', display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {homeTeam.floor.toFixed(2)}</span> <span>Ceiling: {homeTeam.ceiling.toFixed(2)}</span></div>
                                 </Row>
                             </div>
                         </Card.Text>
@@ -259,6 +287,9 @@ const Game = ({ teams, matchup }) => {
                                 <Row>
                                     <div className="score">{awayTeam.teamScore}</div>
                                     <div style={{fontSize: 'x-small'}}>Proj: {awayTeam.projectedScore}</div>
+                                </Row>
+                                <Row>
+                                    <div style={{fontSize: 'x-small', display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {awayTeam.floor.toFixed(2)}</span> <span>Ceiling: {awayTeam.ceiling.toFixed(2)}</span></div>
                                 </Row>
                             </div>
                         </Card.Text>
