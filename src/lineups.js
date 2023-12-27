@@ -71,7 +71,11 @@ const Lineups = ({ loaded, teams, matchups, refreshFunc, simulated }) => {
 };
 
 const Game = ({ teams, matchup, refreshFunc, simulated }) => {
+    
+    console.log(teams);
+    if (simulated) {
 
+    }
     const [width, setWidth] = useState(window.innerWidth);
     const [seed, setSeed] = useState(0);
 
@@ -250,16 +254,20 @@ const Game = ({ teams, matchup, refreshFunc, simulated }) => {
         homeTeam.teamScore = (homeScore + homeTeam.pastScore).toFixed(2);
         awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
         console.log(homeScore);
-        setSeed(Math.random());
+        // setSeed(Math.random());
         setClickCount(clickCount + 1);
+        simulated = true;
     }
 
     let backgroundAway = 'dark';
     let backgroundHome = 'dark';
+    let gotSimScores = false;
 
-    if (simulated) {
+    if (simulated && !gotSimScores) {
+        // simulate();
         backgroundHome = homeTeam.teamScore > awayTeam.teamScore ? 'success' : 'danger';
         backgroundAway = awayTeam.teamScore > homeTeam.teamScore ? 'success' : 'danger';
+        gotSimScores = true;
     }
 
 

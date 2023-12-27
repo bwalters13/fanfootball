@@ -41,16 +41,19 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
 
     const [show, setShow] = useState(false);
 
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setShow(false);
+        refreshFunc();
+    }
     const handleShow = () => setShow(true);
 
     const isMobile = width <= 768;
     const simulate = () => {
-        let simTeams = {...teams};
+        let simTeams = JSON.parse(JSON.stringify(teams));
         let homeTeam = simTeams[12];
         let awayTeam = simTeams[13];
-        let homeStarters = homeTeam.teamPlayers;
-        let awayStarters = awayTeam.teamPlayers;
+        let homeStarters = JSON.parse(JSON.stringify(homeTeam.teamPlayers));
+        let awayStarters = JSON.parse(JSON.stringify(awayTeam.teamPlayers));
         let homeScore = 0;
         let awayScore = 0;
         homeStarters.forEach((player) => {
@@ -63,13 +66,14 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
         });
         homeTeam.teamScore = (homeScore + homeTeam.pastScore).toFixed(2);
         awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
-        console.log(homeScore);
+        simTeams[12].teamPlayers = homeStarters;
+        simTeams[13].teamPlayers = awayStarters;
         return simTeams;
     }
 
     if (loaded) {
         let wins = 0;
-        for (let i = 0; i < 10000; i++) {
+        for (let i = 0; i < 1000; i++) {
             if ((teams[12].sims[i] + Number(teams[12].teamScore)) > (teams[13].sims[i] + Number(teams[13].teamScore))) {
                 wins++;
             }
@@ -86,7 +90,7 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
                             <Modal dialogClassName="my-modal" show={show} onHide={handleClose} fullscreen={true}>
                                 <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={handleClose}><XCircleFill size={32}/>Close</button>
                                 <Modal.Body>
-                                <Lineups loaded={loaded} teams={simulate()} matchups={matchups} refreshFunc={refreshFunc} simulated={true}></Lineups>
+                                    <Lineups loaded={loaded} teams={teams} matchups={matchups} refreshFunc={refreshFunc} simulated={true}></Lineups>
                                 </Modal.Body>
                             </Modal>
                         <button type="button" class="btn btn-default btn-sm" style={{color: 'white', margin: 'auto', backgroundColor: 'blue'}} onClick={refreshFunc}>
