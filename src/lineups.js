@@ -294,10 +294,10 @@ const Game = ({ teams, matchup, refreshFunc, simulated }) => {
                                 </Row>
                                 <Row>
                                     <div className="score">{homeTeam.teamScore}</div>
-                                    <div style={{fontSize: 'x-small'}}>Proj: {homeTeam.projectedScore}</div>
+                                    <div class="proj-card">Proj: {homeTeam.projectedScore}</div>
                                 </Row>
                                 <Row>
-                                    <div style={{fontSize: 'x-small', display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {homeTeam.floor.toFixed(2)}</span> <span>Ceiling: {homeTeam.ceiling.toFixed(2)}</span></div>
+                                    <div class="proj-card" style={{display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {homeTeam.floor.toFixed(2)}</span> <span>Ceiling: {homeTeam.ceiling.toFixed(2)}</span></div>
                                 </Row>
                             </div>
                         </Card.Text>
@@ -312,10 +312,10 @@ const Game = ({ teams, matchup, refreshFunc, simulated }) => {
                                 </Row>
                                 <Row>
                                     <div className="score">{awayTeam.teamScore}</div>
-                                    <div style={{fontSize: 'x-small'}}>Proj: {awayTeam.projectedScore}</div>
+                                    <div class="proj-card" style={{}}>Proj: {awayTeam.projectedScore}</div>
                                 </Row>
                                 <Row>
-                                    <div style={{fontSize: 'x-small', display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {awayTeam.floor.toFixed(2)}</span> <span>Ceiling: {awayTeam.ceiling.toFixed(2)}</span></div>
+                                    <div class="proj-card" style={{display: 'inline-block'}}><span style={{marginRight: '10%'}}>Floor: {awayTeam.floor.toFixed(2)}</span> <span>Ceiling: {awayTeam.ceiling.toFixed(2)}</span></div>
                                 </Row>
                             </div>
                         </Card.Text>

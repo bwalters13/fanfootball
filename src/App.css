@@ -31,6 +31,10 @@ h3.awayTeam {
 
 }
 
+.proj-card {
+  font-size: small;
+}
+
 .nav-link {
   font-weight: bold;
 }
@@ -82,7 +86,9 @@ html {
   margin: auto;
 }
 
-
+.score {
+  padding-bottom: 2%;
+}
 
 .table {
   margin: auto;
@@ -155,6 +161,10 @@ tr {
     display: inline-block;  
     font-size: xx-small !important;
     width: 50% !important;
+  }
+
+  .proj-card {
+    font-size: x-small !important;
   }
 
   .div-sum{

@@ -48,28 +48,6 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
     const handleShow = () => setShow(true);
 
     const isMobile = width <= 768;
-    const simulate = () => {
-        let simTeams = JSON.parse(JSON.stringify(teams));
-        let homeTeam = simTeams[12];
-        let awayTeam = simTeams[13];
-        let homeStarters = JSON.parse(JSON.stringify(homeTeam.teamPlayers));
-        let awayStarters = JSON.parse(JSON.stringify(awayTeam.teamPlayers));
-        let homeScore = 0;
-        let awayScore = 0;
-        homeStarters.forEach((player) => {
-            player.playerScore = player.random;
-            homeScore += player.playerScore;
-        });
-        awayStarters.forEach((player) => {
-            player.playerScore = player.random;
-            awayScore += player.playerScore;
-        });
-        homeTeam.teamScore = (homeScore + homeTeam.pastScore).toFixed(2);
-        awayTeam.teamScore = (awayScore + awayTeam.pastScore).toFixed(2);
-        simTeams[12].teamPlayers = homeStarters;
-        simTeams[13].teamPlayers = awayStarters;
-        return simTeams;
-    }
 
     if (loaded) {
         let wins = 0;
