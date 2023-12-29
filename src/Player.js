@@ -40,6 +40,9 @@ export default class Player {
 
     get random() {
         let points = 0;
+        if (this.playerObj.locked) {
+            return this.playerObj.totalPoints;
+        }
         Object.keys(this.playerObj.projectedRawStats).forEach(stat => {
             let val = 0;
             switch (stat) {
