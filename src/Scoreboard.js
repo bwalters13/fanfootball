@@ -98,10 +98,6 @@ export default function Scoreboard({ loaded, teams, matchups, refreshFunc }) {
                                         <Col style={{paddingBottom: '5%', fontSize: "x-large"}}>{teams[matchup.awayTeam].teamScore}</Col>
                                     </Row>
                                     <Row>
-                                        <Col className="sb-detail" style={{paddingBottom: '5%', fontSize: "medium"}}>Win Probability:<br/> {(teams[matchup.homeTeam].wp*100).toFixed(0) + '%'}</Col>
-                                        <Col className="sb-detail" style={{paddingBottom: '5%', fontSize: "medium"}}>Win Probability:<br/> {(teams[matchup.awayTeam].wp*100).toFixed(0) + '%'}</Col>
-                                    </Row>
-                                    <Row>
                                         <Col className="sb-detail">Projected Score:</Col>
                                         <Col className="sb-detail">Yet To Play: </Col>
                                     
